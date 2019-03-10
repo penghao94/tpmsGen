@@ -19,7 +19,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set( INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include )
 file(GLOB INCLUDE_DIRS ${INCLUDE_DIR}/*.h ${INCLUDE_DIR}/*.cpp )
 add_library(tpmsgen ${INCLUDE_DIRS})
- target_include_directories（tpmsgen PUBLIC ${INCLUDE_DIR}）
+ target_include_directories(tpmsgen PUBLIC ${INCLUDE_DIR})
 
 # Eigen
 if(TARGET Eigen3::Eigen)
