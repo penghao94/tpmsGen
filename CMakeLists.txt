@@ -16,10 +16,10 @@ include(cmake/DownloadProject.cmake)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 #Add include
-set( INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include )
-file(GLOB INCLUDE_DIRS ${INCLUDE_DIR}/*.h ${INCLUDE_DIR}/*.cpp )
+set( TPMSGEN_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include )
+file(GLOB INCLUDE_DIRS ${TPMSGEN_INCLUDE_DIR}/*.h ${TPMSGEN_INCLUDE_DIR}/*.cpp )
 add_library(tpmsgen ${INCLUDE_DIRS})
- target_include_directories(tpmsgen PUBLIC ${INCLUDE_DIR})
+target_include_directories(tpmsgen PUBLIC ${TPMSGEN_INCLUDE_DIR})
 
 # Eigen
 if(TARGET Eigen3::Eigen)
@@ -40,5 +40,5 @@ endif()
  file(GLOB HEADFILES *.h)
 file(GLOB SRCFILES *.cpp)
 add_executable(${PROJECT_NAME}_bin ${HEADFILES} ${SRCFILES} )
-target_include_directories(${PROJECT_NAME}_bin PUBLIC ${INCLUDE_DIR} )
+target_include_directories(${PROJECT_NAME}_bin PUBLIC ${TPMSGEN_INCLUDE_DIR} )
 target_link_libraries(${PROJECT_NAME}_bin  tpmsgen)
