@@ -46,15 +46,12 @@ namespace tpmsgen {
 	inline void TPMSGenerator<DerivedValue, DerivedSize>::getDistanceField(Eigen::PlainObjectBase <DerivedG>& grid, Eigen::PlainObjectBase <DerivedV>& value)
 	{
 
-
-
-
 		std::vector<size_t> res(3);
 		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution);
 
 		
-		grid.resize(res_0 * res[1] * res[2], 3);
-		value.resize(res_0 * res[1] * res[2], 1);
+		grid.resize(res[0] * res[1] * res[2], 3);
+		value.resize(res[0]* res[1] * res[2], 1);
 
 		const auto lerp = [&](const size_t index, const size_t dim)->DerivedSize {
 			return Vmin[dim] + static_cast<DerivedSize>(index) / static_cast<DerivedSize>(res[dim] - 1)
@@ -65,15 +62,16 @@ namespace tpmsgen {
 			const DerivedSize pz = lerp(z, 2);
 			for (size_t y = 0; y < res[1]; y++) {
 				const DerivedSize py = lerp(y, 1);
-				for (size_t x = 0; x < res_0; x++) {
+				for (size_t x = 0; x < res[0]; x++) {
 					const DerivedSize px = lerp(x, 0);
 
-					grid.row(x + res_0 * (y + res[1] * z)) << px, py, pz;
-					value.row(x + res_0 * (y + res[1] * z)) << func(px, py, pz);
+					grid.row(x + res[0] * (y + res[1] * z)) << px, py, pz;
+					value.row(x + res[0] * (y + res[1] * z)) << func(px, py, pz);
 
 				}
 			}
 		}
+
 	}
 
 	// | 0/1 0/1 0/1 0/1 0/1 0/1|
