@@ -47,7 +47,7 @@ namespace tpmsgen {
 	{
 
 		std::vector<size_t> res(3);
-		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution);
+		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution)+1;
 
 		
 		grid.resize(res[0] * res[1] * res[2], 3);
@@ -83,7 +83,7 @@ namespace tpmsgen {
 	inline void TPMSGenerator<DerivedValue, DerivedSize>::getDistanceField(const size_t label, Eigen::PlainObjectBase<DerivedG>& grid, Eigen::PlainObjectBase<DerivedV>& value)
 	{
 		std::vector<size_t> res(3);
-		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution);
+		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution)+1;
 		
 		std::vector<int> bound(6);
 		for (size_t i = 0; i < 6; i++)
@@ -141,7 +141,7 @@ namespace tpmsgen {
 		getDistanceField(grid, value);
 		for (int i = 0; i < value.rows(); i++) value(i) -= level;
 		std::vector<size_t> res(3);
-		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution);
+		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution)+1;
 
 		tpmsgen::marching_cubes(value, grid, res_0, res[1], res[2],0.0, vertices, facets);
 	}
@@ -156,7 +156,7 @@ namespace tpmsgen {
 		getDistanceField(label,grid, value);
 		for (int i = 0; i < value.rows(); i++) value(i) -= level;
 		std::vector<size_t> res(3);
-		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution);
+		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution)+1;
 
 
 		std::vector<size_t> bound(6);
