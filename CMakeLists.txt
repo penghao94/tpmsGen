@@ -29,8 +29,8 @@ else()
 	download_project(PROJ    eigen
 		 			 SOURCE_DIR   ${CMAKE_CURRENT_LIST_DIR}/external/eigen
 					 DOWNLOAD_DIR ${CMAKE_CURRENT_LIST_DIR}/external/.cache/eigen 
-					 URL           http://bitbucket.org/eigen/eigen/get/3.2.10.tar.gz
-					 URL_MD5       8ad10ac703a78143a4062c9bda9d8fd3
+					 GIT_REPOSITORY http://bitbucket.org/eigen/eigen/get/3.7.7.tar.gz
+					 GIT_TAG 3.3.7
 					
 		)
   target_include_directories(tpmsgen PUBLIC ${CMAKE_CURRENT_LIST_DIR}/external/eigen)
