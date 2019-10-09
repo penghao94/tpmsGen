@@ -63,79 +63,46 @@ void func(const Eigen::VectorXd &data) {
 		std::cout << x << std::endl;
 }
 int main() {
-	const auto &f = [](double x, double y, double z)->double {
+	/*const auto &f = [](double x, double y, double z)->double {
 		return 10 * (cos(x)*sin(y) + cos(y)*sin(z) + cos(z)*sin(x))
-			- 0.5*(cos(2 * x)*cos(2 * y) + cos(2 * y)*cos(2 * z) + cos(2 * z)*cos(2 * x));
-<<<<<<< HEAD
-=======
-		//return cos(x) + cos(y) + cos(z);
->>>>>>> 5484bc40cf5bddf18dfaed605910d67411e8540d
+			- 0.5*(cos(2 * x)*cos(2 * y) + cos(2 * y)*cos(2 * z) + cos(2 * z)*cos(2 * x));*/
+
+	const auto &f = [](double x, double y, double z)->double {
+		return 10 * (cos(x) + cos(y) + cos(z))-5.1*(cos(x)*cos(y)+cos(y)*cos(z)+cos(z)*cos(x));
+
 	};
 
-	//std::vector<double>Vmin = { 0,0,0 };
-	//std::vector<double>Vmax = { 2 * PI,2 * PI,2 * PI };
+	std::vector<double>Vmin = { 0,0,0 };
+	std::vector<double>Vmax = { 2 * PI,2 * PI,2 * PI };
 
-	double x = 2.5, y = 17.5, z =12.5 ;
+	/*double x = 2.5, y = 17.5, z =12.5 ;
 	std::vector<double>Vmin = { (x - 10)*0.1*PI,(y - 10)*0.1*PI,(z - 10)*0.1*PI };
-	std::vector<double>Vmax = { (x + 10)*0.1*PI,(y + 10)*0.1*PI,(z + 10)*0.1*PI };
+	std::vector<double>Vmax = { (x + 10)*0.1*PI,(y + 10)*0.1*PI,(z + 10)*0.1*PI };*/
 
 
-	double levelset = 9;
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F;
-	tpmsgen::TPMSGenerator<double, double> tg(f, Vmin, Vmax, 15);
-	tg.makeLevelSet(0xFF, levelset, V, F);
-
-	writeOBJ("D:/OneDrive/data/2019-07-01//cell" + std::to_string(x) + "_" + std::to_string(y) + "_" + std::to_string(z) + ".obj", V, F);
-	Eigen::SparseMatrix<int> G(4,4);
-	G.insert(1, 1) = 9;
-	G.insert(2, 2) = 3;
-	G.insert(3, 3) = 1;
-
-	std::cout << G << std::endl;
-
-	G.coeffRef(2, 2) = 0;
-	G.makeCompressed();
-	G.
-	for (int k = 0; k < G.outerSize(); ++k)
-		for (SparseMatrix<int>::InnerIterator it(G, k); it; ++it)
-		{
-			std::cout << it.value() << std::endl;; // 元素值
-			it.row();   // 行标row index
-			it.col();   // 列标（此处等于k）
-			it.index(); // 内部索引，此处等于it.row()
-		}
+	tpmsgen::TPMSGenerator<double, double> tg(f, Vmin, Vmax, 50);
 	
-<<<<<<< HEAD
-	double x = 12.5, y = 2.5, z = 17.5;
-	std::vector<double>Vmin = { (x - 10)*0.1*PI,(y - 10)*0.1*PI,(z - 10)*0.1*PI };
-	std::vector<double>Vmax = { (x + 10)*0.1*PI,(y + 10)*0.1*PI,(z + 10)*0.1*PI };
-	double levelset = 5;
-
-	tpmsgen::TPMSGenerator<double,double> tg(f,Vmin, Vmax, 100);
-	Eigen::MatrixXd C2W(290, 2);
-	for (int i = 0; i <290; i++) {
-	std::vector<double> h = {1};
-	//for (int k = 0; k < h.size(); k++) {
-		std::vector<double> stretch = { 10 * h[0],10 * h[0],10*h[0] };
-		double density = 0;
-		Eigen::MatrixXd V; Eigen::MatrixXi F;
-		tg.makeLevelSet(0x3F, static_cast<double>(14.6-0.1*i), V, F, density);
-		C2W.row(i) << static_cast<double>(14.6 - 0.1*i),density;
-		std::cout << C2W.row(i) << std::endl;
+	Eigen::MatrixXd ship(295, 3);
+	double density;
+	ship.row(0) << 15, 0, 0;
+	for (int i = 0; i < 294; i++) {
+		double levelset = 14.7 - 0.05*i;
+		tg.makeLevelSet(0x3F, levelset, V, F, density);;
+		//writeOBJ("../data/TEST/TP_level_" + std::to_string(levelset) + "_density_" + std::to_string(density) + "_X_" + std::to_string(1)
+			//+ "_Y_" + std::to_string(1) + "_Z_" + std::to_string(1) + ".obj", V, F);
+		ship.row(i+1) << levelset, density, sqrt(density / (3 * PI));
+	}	
 		//for (int j = 0; j < 3; j++) V.col(j) *= stretch[j] / (2 * PI);
 
-		/*writeOBJ("../data/TEST/TG_level_" + std::to_string(i) + "_density_" + std::to_string(density) + "_X_" + std::to_string(stretch[0])
-			+ "_Y_" + std::to_string(stretch[1]) + "_Z_" + std::to_string(stretch[2]) + ".obj", V, F);*/
-		//writeOBJ("../data/TEST/TG_level_" + std::to_string(i) + "_density_" + std::to_string(density) + "_X_" + std::to_string(1)
-			//+ "_Y_" + std::to_string(1) + "_Z_" + std::to_string(1) + ".obj", V, F);
-		//}
-		
-	}
-	writeLOG("../data/levelset2density.csv", C2W);
+		//writeOBJ("../data/TEST/TG_level_" + std::to_string(levelset) + "_density_" + std::to_string(density) + "_X_" + std::to_string(1)
+		//	+ "_Y_" + std::to_string(1) + "_Z_" + std::to_string(1) + ".obj", V, F);
+		////writeOBJ("../data/TEST/TG_level_" + std::to_string(i) + "_density_" + std::to_string(density) + "_X_" + std::to_string(1)
+		//	//+ "_Y_" + std::to_string(1) + "_Z_" + std::to_string(1) + ".obj", V, F);
+		////}
+	writeLOG("../data/level_density_radii.csv", ship);
 	system("pause");
 	
-=======
 
->>>>>>> 5484bc40cf5bddf18dfaed605910d67411e8540d
 }
