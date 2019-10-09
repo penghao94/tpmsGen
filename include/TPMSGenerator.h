@@ -5,6 +5,7 @@ constexpr auto PI = 3.1415926;
 #include<vector>
 #include<Eigen/core>
 #include "MarchingCubes.h"
+#include "shape_function.h"
 namespace tpmsgen {
 
 	template<typename DerivedValue, typename DerivedSize>
@@ -33,8 +34,13 @@ namespace tpmsgen {
 		void getDistanceField(const size_t label, Eigen::PlainObjectBase<DerivedG> &grid, Eigen::PlainObjectBase<DerivedV> &value);
 		template<typename DerivedVec, typename DerivedFct>
 		void makeLevelSet(const DerivedValue &level, Eigen::PlainObjectBase<DerivedVec> &vertices, Eigen::PlainObjectBase<DerivedFct>&facets);
+
 		template<typename DerivedVec, typename DerivedFct>
 		void makeLevelSet(const size_t label, const DerivedValue &level, Eigen::PlainObjectBase<DerivedVec> &vertices, Eigen::PlainObjectBase<DerivedFct>&facets);
+
+		template<typename DerivedVec, typename DerivedFct>
+		void makeLevelSet(const size_t label, const Eigen::PlainObjectBase<DerivedValue> &level, Eigen::PlainObjectBase<DerivedVec> &vertices, Eigen::PlainObjectBase<DerivedFct>&facets);
+
 		template<typename DerivedVec, typename DerivedFct>
 		void makeLevelSet(const size_t label, const DerivedValue &level, Eigen::PlainObjectBase<DerivedVec> &vertices, Eigen::PlainObjectBase<DerivedFct>&facets, DerivedValue &density);
 		~TPMSGenerator() {};
@@ -175,6 +181,58 @@ namespace tpmsgen {
 			}
 		}
 	
+
+		tpmsgen::marching_cubes(value, grid, res_0, res_1, res_2, 0.0, vertices, facets);
+		facets.col(1).swap(facets.col(2));
+	}
+
+	template<typename DerivedValue, typename DerivedSize>
+	template<typename DerivedVec, typename DerivedFct>
+	inline void TPMSGenerator<DerivedValue, DerivedSize>::makeLevelSet(const size_t label, const Eigen::PlainObjectBase<DerivedValue>& level, Eigen::PlainObjectBase<DerivedVec>& vertices, Eigen::PlainObjectBase<DerivedFct>& facets)
+	{
+		Eigen::Matrix<DerivedSize, Eigen::Dynamic, 3> grid;
+		Eigen::Matrix<DerivedValue, Eigen::Dynamic, 1> value;
+		Eigen::Matrix<DerivedValue, Eigen::Dynamic, 1> levelset;
+
+		getDistanceField(label, grid, value);
+
+		tpmsgen::ShapeFunction(grid, level, levelset);
+
+
+		for (int i = 0; i < value.rows(); i++) value(i) -= levelset(i);
+		std::vector<size_t> res(3);
+		for (int i = 0; i < 3; i++) res[i] = static_cast<size_t>((Vmax[i] - Vmin[i]) / PI * solution) + 1;
+
+
+		std::vector<size_t> bound(6);
+		for (size_t i = 0; i < 6; i++)
+			bound[i] = (label >> i) & 0x01;
+
+		int res_0 = bound[0] + res[0] + bound[2];
+		int res_1 = bound[1] + res[1] + bound[3];
+		int res_2 = bound[4] + res[2] + bound[5];
+
+		for (size_t z = 0; z < res_2; z++) {
+			for (size_t y = 0; y < res_1; y++) {
+				for (size_t x = 0; x < res_0; x++) {
+
+					if (x == 0 && (label & 0x01))
+						value(x + res_0 * (y + res_1 * z), 0) = value(x + res_0 * (y + res_1 * z), 0) > 0 ? 0 : value(x + res_0 * (y + res_1 * z), 0);
+					else if (x == res_0 - 1 && ((label >> 2) & 0x01))
+						value(x + res_0 * (y + res_1 * z), 0) = value(x + res_0 * (y + res_1 * z), 0) > 0 ? 0 : value(x + res_0 * (y + res_1 * z), 0);
+					else if (y == 0 && ((label >> 1) & 0x01))
+						value(x + res_0 * (y + res_1 * z), 0) = value(x + res_0 * (y + res_1 * z), 0) > 0 ? 0 : value(x + res_0 * (y + res_1 * z), 0);
+					else if (y == res_1 - 1 && ((label >> 3) & 0x01))
+						value(x + res_0 * (y + res_1 * z), 0) = value(x + res_0 * (y + res_1 * z), 0) > 0 ? 0 : value(x + res_0 * (y + res_1 * z), 0);
+					else if (z == 0 && ((label >> 4) & 0x01))
+						value(x + res_0 * (y + res_1 * z), 0) = value(x + res_0 * (y + res_1 * z), 0) > 0 ? 0 : value(x + res_0 * (y + res_1 * z), 0);
+					else if (z == res_2 - 1 && ((label >> 5) & 0x01))
+						value(x + res_0 * (y + res_1 * z), 0) = value(x + res_0 * (y + res_1 * z), 0) > 0 ? 0 : value(x + res_0 * (y + res_1 * z), 0);
+
+				}
+			}
+		}
+
 
 		tpmsgen::marching_cubes(value, grid, res_0, res_1, res_2, 0.0, vertices, facets);
 		facets.col(1).swap(facets.col(2));
